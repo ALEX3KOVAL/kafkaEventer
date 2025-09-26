@@ -32,39 +32,3 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
-
-tasks {
-    val copyDeps = register("copyDeps", Copy::class) {
-        from(configurations.runtimeClasspath.get())
-        into(rootProject.layout.buildDirectory.dir("libs"))
-        outputs.upToDateWhen { true }
-    }
-
-    val copyResources = register("copyResources", Copy::class) {
-        from(sourceSets.main.get().resources)
-        into(rootProject.layout.buildDirectory.dir("resources").get().asFile.absolutePath)
-
-        outputs.upToDateWhen { true }
-    }
-
-    /*bootJar {
-        destinationDirectory.set(rootProject.layout.buildDirectory.get())
-        archiveFileName.set("eventerApp.jar")
-
-        manifest {
-            attributes.apply {
-                put("Class-Path", configurations.runtimeClasspath.get()
-                    .filter { it.extension == "jar" }
-                    .distinctBy { it.name }
-                    .joinToString(separator = " ", transform = { "libs/${it.name}" }))
-            }
-        }
-
-        dependsOn(copyDeps)
-        dependsOn(copyResources)
-    }*/
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
