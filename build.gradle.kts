@@ -1,11 +1,12 @@
 plugins {
-    id("java")
+    id("java-library")
     id("org.springframework.boot") version "3.5.4"
     id("io.spring.dependency-management") version "1.1.7"
+    id("maven-publish")
 }
 
 group = "ru.alex3koval"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -31,4 +32,28 @@ dependencies {
     //implementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+
+            groupId = "alex3koval"
+            artifactId = "kafka-eventer"
+            version = "1.0.1"
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ALEX3KOVAL/kafkaEventer")
+
+            credentials {
+                username = "ALEX3KOVAL"
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
 }
