@@ -2,26 +2,31 @@ package ru.alex3koval.kafkaEventer;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
+import reactor.core.publisher.Mono;
 import ru.alex3koval.eventingContract.EventListener;
 import ru.alex3koval.eventingImpl.manager.EventListenerManager;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-public class EventerPreprocessor {
+class EventerPreprocessor {
     private final ApplicationContext applicationContext;
     private final EventerProperties eventerProps;
-    EventListenerManager eventListenerManager;
+    private final EventListenerManager eventListenerManager;
 
-    public <T, R> void registerListener(
+    void stopContainers() {
+        eventListenerManager.stopContainers();
+    }
+
+    void registerListener(
         List<String> topics,
-        Class<? extends EventListener<T, R>> eventListenerClazz,
-        Class<T> payloadClazz
+        Class<? extends EventListener<Object, Mono<?>>> eventListenerClazz,
+        Class<Object> payloadClazz
     ) {
         topics.forEach(topic -> {
             EventerProperties.TopicParams topicParams = eventerProps
                 .getByTopic(topic)
-                .orElseGet(null);
+                .orElse(null);
 
             if (topicParams == null) {
                 throw new RuntimeException("Не найдена конфигурация по топику: " + topic);
